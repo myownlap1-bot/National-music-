@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Национальная музыка Кыргызстана</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <img src="images/logo.png" alt="Логотип" class="logo">
+        <h1>Кыргыз эл ырлары</h1>
+        <p class="subtitle">Слушайте и скачивайте национальную музыку</p>
+    </header>
+
+    <main>
+        <div class="music-list">
+            <div class="track">
+                <img src="images/logo.png" alt="Обложка" class="cover">
+                <div class="info">
+                    <h3>«Кара Жорго»</h3>
+                    <audio controls id="player1">
+                        <source src="music/kara_jorgo.mp3" type="audio/mpeg">
+                        Ваш браузер не поддерживает аудио.
+                    </audio>
+                    <a href="music/kara_jorgo.mp3" download class="download-btn">⬇ Скачать</a>
+                </div>
+            </div>
+
+            <div class="track">
+                <img src="images/logo.png" alt="Обложка" class="cover">
+                <div class="info">
+                    <h3>«Элдордо»</h3>
+                    <audio controls id="player2">
+                        <source src="music/eldordo.mp3" type="audio/mpeg">
+                        Ваш браузер не поддерживает аудио.
+                    </audio>
+                    <a href="music/eldordo.mp3" download class="download-btn">⬇ Скачать</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2025 Национальная музыка Кыргызстана | Сделано с ❤</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap');
+
+body {
+    font-family: 'Rubik', sans-serif;
+    background: linear-gradient(to right, #fff8e7, #f9e0ae);
+    color: #222;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background: linear-gradient(135deg, #a46335, #c49b63);
+    color: white;
+    text-align: center;
+    padding: 30px 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.logo {
+    width: 90px;
+    border-radius: 50%;
+}
+
+.subtitle {
+    font-size: 1.1em;
+    color: #f5f5f5;
+}
+
+.music-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    padding: 40px 20px;
+}
+
+.track {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    width: 300px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.track:hover {
+    transform: scale(1.05);
+}
+
+.cover {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.info {
+    padding: 15px;
+}
+
+h3 {
+    margin: 10px 0;
+    color: #a46335;
+}
+
+audio {
+    width: 100%;
+    margin: 5px 0;
+}
+
+.download-btn {
+    display: inline-block;
+    margin-top: 5px;
+    padding: 8px 12px;
+    background: #a46335;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+.download-btn:hover {
+    background: #8b552d;
+}
+
+footer {
+    background-color: #333;
+    color: #eee;
+    text-align: center;
+    padding: 15px;
+    font-size: 0.9em;
+}
