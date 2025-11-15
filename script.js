@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
   <!-- Скрипт вашего сайта, если он у вас есть -->
-    <script src="script.js"></script>
+    
 
     <!-- БЛОК ПОДКЛЮЧЕНИЯ И ЛОГИКИ FIRESTORE -->
     <script type="module">
@@ -68,3 +68,4 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error("Убедитесь, что правила Firestore установлены на 'allow read, write: if true;'");
             }
         }
+
