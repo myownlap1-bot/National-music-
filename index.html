@@ -46,6 +46,29 @@
     </footer>
 
     <script src="script.js"></script>
+
+    <script type="module">
+  
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
+  
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyB59vRSw3ZkIAs4tYjQfDcIpKKm4QnLKSM",
+    authDomain: "an-base.firebaseapp.com",
+    projectId: "an-base",
+    storageBucket: "an-base.firebasestorage.app",
+    messagingSenderId: "629172760240",
+    appId: "1:629172760240:web:937b5ac8f37e9c804dd575",
+    measurementId: "G-V8G2Q98VW4"
+  };
+
+ 
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+    
 </body>
 
 </html>
+
