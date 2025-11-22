@@ -4,48 +4,155 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Национальная музыка Кыргызстана</title>
-    <link rel="stylesheet" href="style.css"> 
+    <style>
+        /* Основные стили (перенесите в style.css при желании) */
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        header {
+            background-color: #a62626; /* Красный оттенок флага */
+            color: white;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .logo {
+            width: 80px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        h1 { margin: 0; font-size: 24px; }
+        .subtitle { margin: 5px 0 0; opacity: 0.9; font-size: 14px; }
+
+        main {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .music-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Карточка трека */
+        .track {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.2s;
+        }
+
+        .track:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .cover {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            background-color: #ddd;
+        }
+
+        .info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+        
+        .info p {
+            margin: 0;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        audio {
+            width: 100%;
+            height: 35px;
+            margin-top: 5px;
+        }
+
+        .download-btn {
+            display: inline-block;
+            text-decoration: none;
+            color: #a62626;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 5px;
+            align-self: flex-start;
+        }
+
+        .loading-text {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            background-color: #333;
+            color: white;
+            font-size: 12px;
+        }
+        
+        /* Адаптив для мобильных */
+        @media (max-width: 600px) {
+            .track {
+                flex-direction: column;
+                text-align: center;
+            }
+            .download-btn {
+                align-self: center;
+            }
+        }
+    </style>
 </head>
 <body>
+
     <header>
-        <img src="logo.png" alt="Логотип" class="logo">
+        <!-- Замените logo.png на реальный путь к вашему лого -->
+        <img src="logo.png" alt="Логотип" class="logo" onerror="this.style.display='none'"> 
         <h1>Кыргыз эл ырлары</h1>
         <p class="subtitle">Слушайте и скачивайте национальную музыку</p>
     </header>
 
     <main>
-        <div class="music-list">
-
-            <div class="track">
-                <img src="logo.png" alt="Обложка" class="cover">
-                <div class="info">
-                    <h3>«Кара Жорго»</h3>
-                    <audio controls id="player1">
-                        <source src="kara_jorgo.mp3" type="audio/mpeg">
-                        Ваш браузер не поддерживает аудио.
-                    </audio>
-                    <a href="kara_jorgo.mp3" download class="download-btn">⬇ Скачать</a>
-                </div>
-            </div>
-
-            <div class="track">
-                <img src="logo.png" alt="Обложка" class="cover">
-                <div class="info">
-                    <h3>«Элдордо»</h3>
-                    <audio controls id="player2">
-                        <source src="eldordo.mp3" type="audio/mpeg">
-                        Ваш браузер не поддерживает аудио.
-                    </audio>
-                    <a href="eldordo.mp3" download class="download-btn">⬇ Скачать</a>
-                </div>
-            </div>
-
+        <div class="music-list" id="music-container">
+            <div class="loading-text">Загрузка музыки...</div>
         </div>
     </main>
+
+    <footer>
+        <p>© 2025 Национальная музыка Кыргызстана | Сделано с ❤</p>
+    </footer>
+
+    <!-- Логика Firebase -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyB59vRSw3ZkIAs4tYjQfDcIpKKm4QnLKSM",
@@ -58,34 +165,78 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         const db = getFirestore(app);
 
-        async function addTestData() {
-            try {
-                const docRef = await addDoc(collection(db, "songs"), {
-                    title: "Lost on You",
-                    artist: "LP",
-                    url:"https://drive.google.com/file/d/15Qv6lATVkFQlVLe3Sjn37k49LIu_EMgn/view?usp=drivesdk",
-                    timestamp: new Date()
-                });
-                console.log("Документ успешно записан:", docRef.id);
-            } catch (e) {
-                console.error("Ошибка записи в Firestore:", e);
+        // --- Функция для превращения ссылки Google Drive в прямую ссылку ---
+        function getDirectDriveUrl(url) {
+            if (!url) return "";
+            // Если это уже прямая ссылка или другой сайт, возвращаем как есть
+            if (!url.includes("drive.google.com")) return url;
+
+            // Пытаемся найти ID файла
+            const idMatch = url.match(/\/d\/(.+?)\//) || url.match(/id=(.+?)(&|$)/);
+            if (idMatch && idMatch[1]) {
+                // Возвращаем ссылку для прямого скачивания/проигрывания
+                return `https://drive.google.com/uc?export=download&id=${idMatch[1]}`;
             }
-        }    
-        addTestData();
+            return url;
+        }
+
+        // --- Главная функция загрузки ---
+        async function loadMusic() {
+            const container = document.getElementById('music-container');
+            
+            try {
+                // Запрос к коллекции 'songs'
+                // (Если будет ошибка 'index', уберите orderBy или создайте индекс в консоли)
+                const q = query(collection(db, "songs")); 
+                
+                const querySnapshot = await getDocs(q);
+                
+                // Очищаем контейнер от надписи "Загрузка..."
+                container.innerHTML = '';
+
+                if (querySnapshot.empty) {
+                    container.innerHTML = '<div class="loading-text">Песен пока нет.</div>';
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const song = doc.data();
+                    
+                    // Преобразуем ссылку (для Google Drive)
+                    const directUrl = getDirectDriveUrl(song.url);
+
+                    // Создаем HTML элемент
+                    const songElement = document.createElement('div');
+                    songElement.className = 'track';
+                    songElement.innerHTML = `
+                        <img src="logo.png" alt="Cover" class="cover" onerror="this.src='https://via.placeholder.com/80?text=Music'">
+                        <div class="info">
+                            <h3>${song.title || 'Без названия'}</h3>
+                            <p>${song.artist || 'Неизвестный исполнитель'}</p>
+                            
+                            <audio controls preload="none">
+                                <source src="${directUrl}" type="audio/mpeg">
+                                Ваш браузер не поддерживает аудио.
+                            </audio>
+                            
+                            <a href="${directUrl}" download target="_blank" class="download-btn">⬇ Скачать</a>
+                        </div>
+                    `;
+                    
+                    container.appendChild(songElement);
+                });
+
+            } catch (error) {
+                console.error("Ошибка при загрузке:", error);
+                container.innerHTML = `<div class="loading-text" style="color:red">Ошибка загрузки: ${error.message}</div>`;
+            }
+        }
+
+        // Запускаем при загрузке страницы
+        loadMusic();
 
     </script>
- <script src="script.js"></script>
-<footer>
-        <p>© 2025 Национальная музыка Кыргызстана | Сделано с ❤</p>
-</footer>
 </body>
 </html>
-
-
-
-
-
-
