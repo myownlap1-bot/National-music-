@@ -194,11 +194,15 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- Функция получения ID файла Google Drive ---
+        // --- Функция получения ID файла Google Drive (Улучшенная) ---
         function getDriveId(url) {
-            if (!url) return null;
+            if (!url || !url.includes('drive.google.com')) return null; // Проверяем, что это точно Drive
+            
+            // Пытаемся найти ID
             const idMatch = url.match(/\/d\/(.+?)\//) || url.match(/id=(.+?)(&|$)/);
-            return idMatch ? idMatch[1] : null;
+            
+            // Возвращаем ID или null, если не найдено
+            return (idMatch && idMatch[1]) ? idMatch[1] : null;
         }
 
         // --- Главная функция загрузки ---
@@ -236,7 +240,7 @@
                     let playerHtml = '';
                     
                     if (previewUrl) {
-                        // *** ИЗМЕНЕНА РАЗМЕТКА ДЛЯ ПРИМЕНЕНИЯ НОВЫХ СТИЛЕЙ ***
+                        // Генерируем iframe только при наличии корректной previewUrl
                         playerHtml = `
                             <div class="iframe-container">
                                 <iframe 
@@ -249,12 +253,10 @@
                                 </iframe>
                             </div>`;
                     } else {
-                        // Этот блок остался для обратной совместимости
-                        playerHtml = `
-                            <audio controls preload="metadata">
-                                <source src="${song.url}" type="audio/mpeg">
-                                Ваш браузер не поддерживает аудио.
-                            </audio>`;
+                        // Если ID не найден, выводим сообщение о проблеме
+                        playerHtml = `<p style="color:red; font-size: 12px; margin-top: 10px;">
+                            ❌ Ошибка ссылки: Не удалось извлечь ID файла Google Drive. Проверьте формат ссылки в Firestore.
+                        </p>`;
                     }
 
                     songElement.innerHTML = `
@@ -282,3 +284,4 @@
     </script>
 </body>
 </html>
+
