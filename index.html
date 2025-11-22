@@ -167,19 +167,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- Функция для превращения ссылки Google Drive в прямую ссылку ---
-        function getDirectDriveUrl(url) {
-            if (!url) return "";
-            // Если это уже прямая ссылка или другой сайт, возвращаем как есть
-            if (!url.includes("drive.google.com")) return url;
-
-            // Пытаемся найти ID файла
+        // --- Функция получения ID файла Google Drive ---
+        function getDriveId(url) {
+            if (!url) return null;
             const idMatch = url.match(/\/d\/(.+?)\//) || url.match(/id=(.+?)(&|$)/);
-            if (idMatch && idMatch[1]) {
-                // Возвращаем ссылку для прямого скачивания/проигрывания
-                return `https://drive.google.com/uc?export=download&id=${idMatch[1]}`;
-            }
-            return url;
+            return idMatch ? idMatch[1] : null;
         }
 
         // --- Главная функция загрузки ---
@@ -187,13 +179,9 @@
             const container = document.getElementById('music-container');
             
             try {
-                // Запрос к коллекции 'songs'
-                // (Если будет ошибка 'index', уберите orderBy или создайте индекс в консоли)
                 const q = query(collection(db, "songs")); 
-                
                 const querySnapshot = await getDocs(q);
                 
-                // Очищаем контейнер от надписи "Загрузка..."
                 container.innerHTML = '';
 
                 if (querySnapshot.empty) {
@@ -203,25 +191,54 @@
 
                 querySnapshot.forEach((doc) => {
                     const song = doc.data();
+                    const driveId = getDriveId(song.url);
                     
-                    // Преобразуем ссылку (для Google Drive)
-                    const directUrl = getDirectDriveUrl(song.url);
+                    // Ссылка для скачивания
+                    const downloadUrl = driveId 
+                        ? `https://drive.google.com/uc?export=download&id=${driveId}`
+                        : song.url;
 
-                    // Создаем HTML элемент
+                    // Ссылка для плеера (PREVIEW)
+                    const previewUrl = driveId 
+                        ? `https://drive.google.com/file/d/${driveId}/preview` 
+                        : null;
+
                     const songElement = document.createElement('div');
                     songElement.className = 'track';
+                    
+                    // Мы используем iframe вместо audio для Google Drive ссылок
+                    // Если ссылка НЕ Google Drive, пытаемся использовать стандартный audio
+                    let playerHtml = '';
+                    
+                    if (previewUrl) {
+                        // Плеер от Google (Iframe)
+                        playerHtml = `
+                            <iframe 
+                                src="${previewUrl}" 
+                                width="100%" 
+                                height="100" 
+                                frameborder="0" 
+                                allow="autoplay"
+                                style="border-radius: 8px; margin-top: 5px;">
+                            </iframe>`;
+                    } else {
+                        // Обычный плеер для прямых ссылок (не Drive)
+                        playerHtml = `
+                            <audio controls preload="none">
+                                <source src="${song.url}" type="audio/mpeg">
+                                Ваш браузер не поддерживает аудио.
+                            </audio>`;
+                    }
+
                     songElement.innerHTML = `
                         <img src="logo.png" alt="Cover" class="cover" onerror="this.src='https://via.placeholder.com/80?text=Music'">
                         <div class="info">
                             <h3>${song.title || 'Без названия'}</h3>
                             <p>${song.artist || 'Неизвестный исполнитель'}</p>
                             
-                            <audio controls preload="none">
-                                <source src="${directUrl}" type="audio/mpeg">
-                                Ваш браузер не поддерживает аудио.
-                            </audio>
+                            ${playerHtml}
                             
-                            <a href="${directUrl}" download target="_blank" class="download-btn">⬇ Скачать</a>
+                            <a href="${downloadUrl}" download target="_blank" class="download-btn">⬇ Скачать</a>
                         </div>
                     `;
                     
@@ -234,9 +251,8 @@
             }
         }
 
-        // Запускаем при загрузке страницы
         loadMusic();
-
     </script>
 </body>
 </html>
+
