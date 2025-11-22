@@ -63,10 +63,10 @@
 
         async function addTestData() {
             try {
-                const docRef = await addDoc(collection(db, "test_songs"), {
-                    title: "Тестовая песня",
-                    artist: "Начинающий разработчик",
-                    progress: 1,
+                const docRef = await addDoc(collection(db, "songs"), {
+                    title: "Lost on You",
+                    artist: "LP",
+                    url:"https://drive.google.com/file/d/15Qv6lATVkFQlVLe3Sjn37k49LIu_EMgn/view?usp=drivesdk",
                     timestamp: new Date()
                 });
                 console.log("Документ успешно записан:", docRef.id);
@@ -83,6 +83,7 @@
 </footer>
 </body>
 </html>
+
 
 
 
