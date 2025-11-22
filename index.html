@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Национальная музыка Кыргызстана</title>
     <style>
-        /* Основные стили (перенесите в style.css при желании) */
+        /* Общие стили */
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             margin: 0;
@@ -49,15 +49,15 @@
             background: white;
             border-radius: 12px;
             padding: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* Усиленная тень */
             align-items: center;
             gap: 15px;
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .track:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-3px); /* Эффект поднятия */
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
 
         .cover {
@@ -66,6 +66,7 @@
             border-radius: 8px;
             object-fit: cover;
             background-color: #ddd;
+            flex-shrink: 0;
         }
 
         .info {
@@ -87,21 +88,49 @@
             color: #7f8c8d;
         }
 
-        audio {
-            width: 100%;
-            height: 35px;
+        /* --- НОВЫЕ СТИЛИ ДЛЯ IFRAME И КНОПОК --- */
+        
+        /* Контейнер для iframe, чтобы обрезать его */
+        .iframe-container {
+            position: relative;
+            height: 40px; /* Делаем контейнер компактным */
             margin-top: 5px;
+            overflow: hidden;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0; /* Легкая рамка */
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        /* Сам IFRAME */
+        .iframe-container iframe {
+            position: absolute;
+            top: -140px; /* Сдвигаем вверх, чтобы скрыть лишний интерфейс Google Drive */
+            left: 0;
+            width: 100%;
+            height: 250px; /* Увеличиваем высоту, чтобы смещение работало */
         }
 
+        /* Улучшенные стили кнопки скачивания */
         .download-btn {
             display: inline-block;
             text-decoration: none;
-            color: #a62626;
+            color: white;
+            background-color: #a62626; /* Красный цвет */
+            padding: 8px 15px;
             font-size: 14px;
             font-weight: bold;
-            margin-top: 5px;
+            border-radius: 6px;
+            margin-top: 10px;
             align-self: flex-start;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
+        .download-btn:hover {
+            background-color: #8c1e1e;
+            transform: translateY(-1px);
+        }
+        /* --- КОНЕЦ НОВЫХ СТИЛЕЙ --- */
 
         .loading-text {
             text-align: center;
@@ -133,7 +162,6 @@
 <body>
 
     <header>
-        <!-- Замените logo.png на реальный путь к вашему лого -->
         <img src="logo.png" alt="Логотип" class="logo" onerror="this.style.display='none'"> 
         <h1>Кыргыз эл ырлары</h1>
         <p class="subtitle">Слушайте и скачивайте национальную музыку</p>
@@ -149,7 +177,6 @@
         <p>© 2025 Национальная музыка Кыргызстана | Сделано с ❤</p>
     </footer>
 
-    <!-- Логика Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -206,32 +233,32 @@
                     const songElement = document.createElement('div');
                     songElement.className = 'track';
                     
-                    // Мы используем iframe вместо audio для Google Drive ссылок
-                    // Если ссылка НЕ Google Drive, пытаемся использовать стандартный audio
                     let playerHtml = '';
                     
                     if (previewUrl) {
-                        // Плеер от Google (Iframe)
+                        // *** ИЗМЕНЕНА РАЗМЕТКА ДЛЯ ПРИМЕНЕНИЯ НОВЫХ СТИЛЕЙ ***
                         playerHtml = `
-                            <iframe 
-                                src="${previewUrl}" 
-                                width="100%" 
-                                height="100" 
-                                frameborder="0" 
-                                allow="autoplay"
-                                style="border-radius: 8px; margin-top: 5px;">
-                            </iframe>`;
+                            <div class="iframe-container">
+                                <iframe 
+                                    src="${previewUrl}" 
+                                    width="100%" 
+                                    height="100%" 
+                                    frameborder="0" 
+                                    allow="autoplay; fullscreen"
+                                    title="${song.title}">
+                                </iframe>
+                            </div>`;
                     } else {
-                        // Обычный плеер для прямых ссылок (не Drive)
+                        // Этот блок остался для обратной совместимости
                         playerHtml = `
-                            <audio controls preload="none">
+                            <audio controls preload="metadata">
                                 <source src="${song.url}" type="audio/mpeg">
                                 Ваш браузер не поддерживает аудио.
                             </audio>`;
                     }
 
                     songElement.innerHTML = `
-                        <img src="logo.png" alt="Cover" class="cover" onerror="this.src='https://via.placeholder.com/80?text=Music'">
+                        <img src="${song.cover || 'logo.png'}" alt="Cover" class="cover" onerror="this.src='https://via.placeholder.com/80?text=Music'">
                         <div class="info">
                             <h3>${song.title || 'Без названия'}</h3>
                             <p>${song.artist || 'Неизвестный исполнитель'}</p>
@@ -255,4 +282,3 @@
     </script>
 </body>
 </html>
-
